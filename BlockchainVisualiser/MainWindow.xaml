@@ -1,0 +1,27 @@
+﻿<Window x:Class="BlockchainVisualiser.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BlockchainVisualiser"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="609.357" Width="720.423">
+    <Grid x:Name="root">
+        <TextBlock HorizontalAlignment="Left" Height="14.416" Margin="12.819,13.046,0,0" TextWrapping="Wrap" Text="Block ID:" VerticalAlignment="Top" Width="49.657"/>
+        <TextBox Text="49ebc1a17ad2745a29c5a90973e9a068a8ac92729bfc0e21162705acfe04f5f5" x:Name="_blockSearchText" HorizontalAlignment="Left" Height="21.429" Margin="67.476,13.046,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="583.478"/>
+        <Button Content="Load" HorizontalAlignment="Left" Height="21.429" Margin="655.954,13.046,0,0" VerticalAlignment="Top" Width="46.469" Click="LoadBlockButton_Click"/>
+        <TextBox Margin="10,174.394,10,10" Text="{Binding CurrentTransaction, Mode=OneWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
+        <TextBlock HorizontalAlignment="Left" Height="16.018" Margin="10,48.286,0,0" TextWrapping="Wrap" Text="Version" VerticalAlignment="Top" Width="43.666"/>
+        <TextBlock HorizontalAlignment="Left" Height="16.018" Margin="10,69.304,0,0" TextWrapping="Wrap" Text="Prev Block" VerticalAlignment="Top" Width="58.883"/>
+        <TextBlock HorizontalAlignment="Left" Height="16.018" Margin="10,90.322,0,0" TextWrapping="Wrap" Text="Time" VerticalAlignment="Top" Width="58.883"/>
+        <TextBlock HorizontalAlignment="Left" Height="16.018" Margin="10,111.34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58.883"><Run Text="Bits"/><LineBreak/><Run/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Height="16.018" Margin="10,132.358,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58.883" Text="Nonce"/>
+        <TextBox Text="{Binding HeaderVersion, Mode=OneWay}" HorizontalAlignment="Left" Height="16.018" Margin="83.716,48.286,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81.277"/>
+        <TextBox Text="{Binding HeaderPreviousHash, Mode=OneWay}" HorizontalAlignment="Left" Height="16.018" Margin="83.716,69.304,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="567.238"/>
+        <TextBox Text="{Binding HeaderBlockTime, Mode=OneWay}" HorizontalAlignment="Left" Height="16.018" Margin="83.716,90.322,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="211.026"/>
+        <TextBox Text="{Binding HeaderBits, Mode=OneWay}" HorizontalAlignment="Left" Height="16.018" Margin="83.716,111.34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160.373"/>
+        <TextBox Text="{Binding HeaderNonce, Mode=OneWay}" HorizontalAlignment="Left" Height="16.018" Margin="83.716,132.358,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160.373"/>
+        <TextBlock HorizontalAlignment="Left" Height="16.018" Margin="12.819,153.376,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58.883" Text="Tx Count"/>
+        <TextBox Text="{Binding TransactionCount, Mode=OneWay}" HorizontalAlignment="Left" Height="16.018" Margin="83.716,153.376,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="46.838"/>
+    </Grid>
+</Window>
