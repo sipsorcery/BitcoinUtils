@@ -1,0 +1,5 @@
+**/debug/*
+**/obj/*
+**/packages/*
+*.suo
+*.user
