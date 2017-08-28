@@ -23,7 +23,7 @@ namespace BlockchainVisualiser
         private uint256 _requestedBlockHash;
         private Newtonsoft.Json.JsonSerializer _jsonSerializer = new Newtonsoft.Json.JsonSerializer();
         private ManualResetEventSlim _waitForGetDataResponseSignal = new ManualResetEventSlim();        // If a getdata request is made for a non-existent block no response will be received.
-        private ManualResetEventSlim _getBlockHeadersSignal = new ManualResetEventSlim();
+        private ManualResetEventSlim _waitForGeHeadersResponseSignal = new ManualResetEventSlim();
         private CancellationTokenSource _cancellationTokenSource;
 
         public MainWindowViewModel ViewModel
@@ -66,13 +66,31 @@ namespace BlockchainVisualiser
         {
             if (_node == null)
             {
-                await Task.Run(() =>
+                try
                 {
-                    _node = Node.ConnectToLocal(_network);
-                    _node.VersionHandshake();
-                });
+#pragma warning disable CS1998
+                    await Task.Run(async () =>
+                    {
+                        _node = Node.ConnectToLocal(_network);
+                        _node.VersionHandshake();
+                    });
+#pragma warning restore
 
-                _node.MessageReceived += Node_MessageReceived;
+                    if (_node != null)
+                    {
+                        _node.MessageReceived += Node_MessageReceived;
+                    }
+                }
+                catch(Exception excp)
+                {
+                    logger.Error($"Exception InitialisedNode. {excp}");
+
+                    // No response to get data request.
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        ViewModel.Status = $"Node connection error. {excp.Message}";
+                    });
+                }
             }
 
             return _node;
@@ -106,6 +124,8 @@ namespace BlockchainVisualiser
 
 
                 case HeadersPayload hdr:
+
+                    _waitForGeHeadersResponseSignal.Set();
 
                     if (hdr.Headers != null && hdr.Headers.Count > 0)
                     {
@@ -145,7 +165,7 @@ namespace BlockchainVisualiser
                     {
                         // Headers synchronised.
                         logger.DebugFormat("Block headers synchronised.");
-                        _getBlockHeadersSignal.Set();
+                        //_getBlockHeadersSignal.Set();
                     }
 
                     break;
@@ -212,40 +232,43 @@ namespace BlockchainVisualiser
 
             var node = await InitialiseNode();
 
-            if (!String.IsNullOrEmpty(searchText))
+            if (node != null)
             {
-                if (uint256.TryParse(searchText, out _requestedBlockHash))
+                if (!String.IsNullOrEmpty(searchText))
                 {
-                    ViewModel.Status = String.Format("Requesting block {0}...", _requestedBlockHash);
+                    if (uint256.TryParse(searchText, out _requestedBlockHash))
+                    {
+                        ViewModel.Status = String.Format("Requesting block {0}...", _requestedBlockHash);
 
-                    _waitForGetDataResponseSignal.Reset();
-                    var dp = new GetDataPayload(new InventoryVector(InventoryType.MSG_BLOCK, _requestedBlockHash));
+                        _waitForGetDataResponseSignal.Reset();
+                        var dp = new GetDataPayload(new InventoryVector(InventoryType.MSG_BLOCK, _requestedBlockHash));
 
 #pragma warning disable CS4014, CS1998
-                    node.SendMessageAsync(dp);
+                        node.SendMessageAsync(dp);
 
-                    Task.Run(async () =>
-                    {
-                        _waitForGetDataResponseSignal.Wait(WAIT_RESPONSE_TIMEOUT_MILLISECONDS, _cancellationTokenSource.Token);
-                        if (_waitForGetDataResponseSignal.IsSet == false)
+                        Task.Run(async () =>
                         {
-                            // No response to get data request.
-                            App.Current.Dispatcher.Invoke(delegate
+                            _waitForGetDataResponseSignal.Wait(WAIT_RESPONSE_TIMEOUT_MILLISECONDS, _cancellationTokenSource.Token);
+                            if (_waitForGetDataResponseSignal.IsSet == false)
                             {
-                                ViewModel.Status = "No response received for requested block.";
-                            });
-                        }
-                    });
+                                // No response to get data request.
+                                App.Current.Dispatcher.Invoke(delegate
+                                {
+                                    ViewModel.Status = "No response received for requested block.";
+                                });
+                            }
+                        });
 #pragma warning restore
+                    }
+                    else
+                    {
+                        ViewModel.Status = "Block search string is an incorrect format.";
+                    }
                 }
                 else
                 {
-                    ViewModel.Status = "Block search string is an incorrect format.";
+                    ViewModel.Status = "Block search string is empty.";
                 }
-            }
-            else
-            {
-                ViewModel.Status = "Block search string is empty.";
             }
         }
 
@@ -253,14 +276,34 @@ namespace BlockchainVisualiser
         {
             var node = await InitialiseNode();
 
-            ViewModel.Status = "Requesting block headers...";
+            if (node != null)
+            {
+                ViewModel.Status = "Requesting block headers...";
 
-            var scanLocation = new BlockLocator();
-            //scanLocation.Blocks.Add(ViewModel.BlockChainHeaders.Tip != null ? ViewModel.BlockChainHeaders.Tip.HashBlock : _network.GetGenesis().GetHash());
-            scanLocation.Blocks.Add(_network.GetGenesis().GetHash());
+                var scanLocation = new BlockLocator();
+                //scanLocation.Blocks.Add(ViewModel.BlockChainHeaders.Tip != null ? ViewModel.BlockChainHeaders.Tip.HashBlock : _network.GetGenesis().GetHash());
+                scanLocation.Blocks.Add(_network.GetGenesis().GetHash());
 
-            var getHeadersPayload = new GetHeadersPayload(scanLocation);
-            await node.SendMessageAsync(getHeadersPayload);
+                _waitForGeHeadersResponseSignal.Reset();
+                var getHeadersPayload = new GetHeadersPayload(scanLocation);
+
+#pragma warning disable CS4014, CS1998
+                node.SendMessageAsync(getHeadersPayload);
+
+                Task.Run(async () =>
+                {
+                    _waitForGeHeadersResponseSignal.Wait(WAIT_RESPONSE_TIMEOUT_MILLISECONDS, _cancellationTokenSource.Token);
+                    if (_waitForGeHeadersResponseSignal.IsSet == false)
+                    {
+                    // No response to get data request.
+                    App.Current.Dispatcher.Invoke(delegate
+                        {
+                            ViewModel.Status = "No response received for get headers request.";
+                        });
+                    }
+                });
+#pragma warning restore
+            }
         }
 
         private void OnBlockHeaderList_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)

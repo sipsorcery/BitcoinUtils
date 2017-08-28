@@ -15,7 +15,7 @@
         <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="14.416" Margin="12.819,13.046,0,0" TextWrapping="Wrap" Text="Block ID:" VerticalAlignment="Top" Width="49.657"/>
         <TextBox Text="0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206" x:Name="_blockSearchText" Grid.Column="1" HorizontalAlignment="Left" Height="21.429" Margin="67.476,13.046,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="408.283"/>
         <Button Content="Load" Grid.Column="1" HorizontalAlignment="Left" Height="21.429" Margin="488.314,13.046,0,0" VerticalAlignment="Top" Width="60.123" Click="LoadBlockButton_Click" />
-        <TextBox Margin="10,205.823,10,27.816" Grid.Column="1" Text="{Binding CurrentTransaction, Mode=OneWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2"/>
+        <TextBox Margin="10,205.823,10,27.816" Grid.Column="1" Text="{Binding CurrentTransaction, Mode=OneWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
         <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,48.286,0,0" TextWrapping="Wrap" Text="Version" VerticalAlignment="Top" Width="43.666"/>
         <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,69.304,0,0" TextWrapping="Wrap" Text="Prev Block" VerticalAlignment="Top" Width="58.883"/>
         <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,111.34,0,0" TextWrapping="Wrap" Text="Time" VerticalAlignment="Top" Width="58.883"/>
@@ -35,7 +35,7 @@
         <StatusBar Height="22.816" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
             <TextBlock TextWrapping="Wrap" Text="{Binding Status, Mode=OneWay}" Width="702.423" FontSize="10" Height="18.011"/>
         </StatusBar>
-        <ListView Grid.Column="0" ItemsSource="{Binding BlockChainHeaders, Mode=OneWay}" MinWidth="130" Margin="10,60,0,25" HorizontalContentAlignment="Stretch" HorizontalAlignment="Left" VerticalContentAlignment="Stretch" MinHeight="480" RenderTransformOrigin="0.5,0.5" Height="463.982" >
+        <ListView Grid.Column="0" ItemsSource="{Binding BlockChainHeaders, Mode=OneWay}" MinWidth="130" Margin="10,60,10,30" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinHeight="460" RenderTransformOrigin="0.5,0.5" >
             <ListView.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
