@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6DDB0992-361D-4BD9-A4DF-A560503FB55A}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ValidateTransactionTest</RootNamespace>
-    <AssemblyName>ValidateTransactionTest</AssemblyName>
+    <RootNamespace>SpendTransaction_WithCli</RootNamespace>
+    <AssemblyName>SpendTransaction_WithCli</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

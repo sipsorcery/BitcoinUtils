@@ -57,7 +57,7 @@ using NBitcoin;
 using NBitcoin.Protocol;
 using log4net;
 
-namespace ValidateTransactionTest
+namespace SpendTransaction_WithCli
 {
     class Program
     {

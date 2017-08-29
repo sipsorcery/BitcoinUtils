@@ -15,7 +15,8 @@
         <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="14.416" Margin="12.819,13.046,0,0" TextWrapping="Wrap" Text="Block ID:" VerticalAlignment="Top" Width="49.657"/>
         <TextBox Text="0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206" x:Name="_blockSearchText" Grid.Column="1" HorizontalAlignment="Left" Height="21.429" Margin="67.476,13.046,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="408.283"/>
         <Button Content="Load" Grid.Column="1" HorizontalAlignment="Left" Height="21.429" Margin="488.314,13.046,0,0" VerticalAlignment="Top" Width="60.123" Click="LoadBlockButton_Click" />
-        <TextBox Margin="10,205.823,10,27.816" Grid.Column="1" Text="{Binding CurrentTransaction, Mode=OneWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
+        <TextBox Grid.Column="1" Margin="10,210,10,299.177" Text="{Binding CurrentTransactionRaw, Mode=OneWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+        <TextBox Grid.Column="1" Margin="10,274.823,10,27.816"  Text="{Binding CurrentTransaction, Mode=OneWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
         <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,48.286,0,0" TextWrapping="Wrap" Text="Version" VerticalAlignment="Top" Width="43.666"/>
         <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,69.304,0,0" TextWrapping="Wrap" Text="Prev Block" VerticalAlignment="Top" Width="58.883"/>
         <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,111.34,0,0" TextWrapping="Wrap" Text="Time" VerticalAlignment="Top" Width="58.883"/>
@@ -59,5 +60,8 @@
         <TextBlock HorizontalAlignment="Left" Height="16.018" Grid.Column="0" Margin="24.872,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="83.711" Text="Block Headers"/>
         <ed:BlockArrow Grid.Column="1" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="20" Margin="145.564,180.823,0,0" Orientation="Left" Stroke="Black" VerticalAlignment="Top" Width="20" MouseLeftButtonUp="BlockArrow_MouseLeftButtonUp"/>
         <ed:BlockArrow Grid.Column="1" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="20" Margin="180.803,180.823,0,0" Orientation="Right" Stroke="Black" VerticalAlignment="Top" Width="20" MouseLeftButtonUp="BlockArrow_MouseLeftButtonUp_1"/>
+        <RadioButton IsChecked="{Binding DisplayFormat_BlockExplorer}" Content="BlockExplorer" Grid.Column="1" HorizontalAlignment="Left" Height="20" Margin="355.6,180.823,0,0" VerticalAlignment="Top" Width="94" GroupName="BlockDisplayFormat" />
+        <RadioButton IsChecked="{Binding DisplayFormat_Satoshi}" Content="Satoshi" Grid.Column="1" HorizontalAlignment="Left" Height="20" Margin="463.6,180.823,0,0" VerticalAlignment="Top" Width="94" GroupName="BlockDisplayFormat"/>
+        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Height="16.018" Margin="355.6,153.376,0,0" TextWrapping="Wrap" Text="Display Format" VerticalAlignment="Top" Width="120.159"/>
     </Grid>
 </Window>

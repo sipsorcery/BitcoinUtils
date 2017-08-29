@@ -43,6 +43,7 @@ namespace BlockchainVisualiser
             root.DataContext = new MainWindowViewModel();
 
             ViewModel.Status = MainWindowViewModel.STATUS_READY_TEXT;
+            ViewModel.DisplayFormat_BlockExplorer = true;
             //ViewModel.BlockChainHeaders = new ConcurrentChain(_network);
         }
 
@@ -116,7 +117,8 @@ namespace BlockchainVisualiser
                         App.Current.Dispatcher.Invoke(delegate
                         {
                             ViewModel.CurrentBlock = block.Object;
-                            ViewModel.CurrentTransaction = block.Object.Transactions.FirstOrDefault()?.ToString(RawFormat.BlockExplorer);
+                            ViewModel.CurrentTransaction = block.Object.Transactions.FirstOrDefault()?.ToString(ViewModel.BlockDisplayFormat);
+                            ViewModel.CurrentTransactionRaw = block.Object.Transactions.FirstOrDefault()?.ToHex();
                             ViewModel.Status = MainWindowViewModel.STATUS_READY_TEXT;
                         });
                     }
@@ -319,7 +321,8 @@ namespace BlockchainVisualiser
         {
             if (ViewModel.CurrentBlock != null)
             {
-                ViewModel.CurrentTransaction = ViewModel.CurrentBlock.Transactions.FirstOrDefault()?.ToString(RawFormat.BlockExplorer);
+                ViewModel.CurrentTransaction = ViewModel.CurrentBlock.Transactions.FirstOrDefault()?.ToString(ViewModel.BlockDisplayFormat);
+                ViewModel.CurrentTransactionRaw = ViewModel.CurrentBlock.Transactions.FirstOrDefault()?.ToHex();
             }
         }
 
@@ -327,7 +330,8 @@ namespace BlockchainVisualiser
         {
             if (ViewModel.CurrentBlock != null)
             {
-                ViewModel.CurrentTransaction = ViewModel.CurrentBlock.Transactions.LastOrDefault()?.ToString(RawFormat.BlockExplorer);
+                ViewModel.CurrentTransaction = ViewModel.CurrentBlock.Transactions.LastOrDefault()?.ToString(ViewModel.BlockDisplayFormat);
+                ViewModel.CurrentTransactionRaw = ViewModel.CurrentBlock.Transactions.LastOrDefault()?.ToHex();
             }
         }
     }

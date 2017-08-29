@@ -141,5 +141,27 @@ namespace BlockchainVisualiser
                 }
             }
         }
+
+        private string _currentTransactionRaw;
+        public string CurrentTransactionRaw
+        {
+            get => _currentTransactionRaw;
+            set
+            {
+                if (value != _currentTransactionRaw)
+                {
+                    _currentTransactionRaw = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentTransactionRaw"));
+                }
+            }
+        }
+
+        public bool DisplayFormat_BlockExplorer { get; set; }
+        public bool DisplayFormat_Satoshi { get; set; }
+
+        public RawFormat BlockDisplayFormat
+        {
+            get => DisplayFormat_Satoshi == true ? RawFormat.Satoshi : RawFormat.BlockExplorer;
+        }
     }
 }
