@@ -4,64 +4,29 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BlockchainVisualiser"
-        xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing" x:Class="BlockchainVisualiser.MainWindow"
+        x:Class="BlockchainVisualiser.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="600" Width="850" MinWidth="850" MinHeight="600">
     <Grid x:Name="root">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MinWidth="150"/>
-            <ColumnDefinition Width="4*" MinWidth="650"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="14.416" Margin="12.819,13.046,0,0" TextWrapping="Wrap" Text="Block ID:" VerticalAlignment="Top" Width="49.657"/>
-        <TextBox Text="0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206" x:Name="_blockSearchText" Grid.Column="1" HorizontalAlignment="Left" Height="21.429" Margin="67.476,13.046,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="408.283"/>
-        <Button Content="Load" Grid.Column="1" HorizontalAlignment="Left" Height="21.429" Margin="488.314,13.046,0,0" VerticalAlignment="Top" Width="60.123" Click="LoadBlockButton_Click" />
-        <TextBox Grid.Column="1" Margin="10,210,10,299.177" Text="{Binding CurrentTransactionRaw, Mode=OneWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
-        <TextBox Grid.Column="1" Margin="10,274.823,10,27.816"  Text="{Binding CurrentTransaction, Mode=OneWay}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,48.286,0,0" TextWrapping="Wrap" Text="Version" VerticalAlignment="Top" Width="43.666"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,69.304,0,0" TextWrapping="Wrap" Text="Prev Block" VerticalAlignment="Top" Width="58.883"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,111.34,0,0" TextWrapping="Wrap" Text="Time" VerticalAlignment="Top" Width="58.883"/>
-        <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,132.358,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58.883"><Run Text="Bits"/><LineBreak/><Run/></TextBlock>
-        <TextBlock HorizontalAlignment="Left" Grid.Column="1" Height="16.018" Margin="10,153.376,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="58.883" Text="Nonce"/>
-        <TextBox Text="{Binding HeaderVersion, Mode=OneWay}" Grid.Column="1" HorizontalAlignment="Left" Height="16.018" Margin="67.476,48.286,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="81.277" IsReadOnly="True" />
-        <TextBox Text="{Binding HeaderPreviousHash, Mode=OneWay}" Grid.Column="1" x:Name="_previousBlockText" HorizontalAlignment="Left" Height="16.018" Margin="67.476,69.304,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="408.283" IsReadOnly="True" />
-        <TextBox Text="{Binding HeaderBlockTime, Mode=OneWay}" Grid.Column="1" HorizontalAlignment="Left" Height="16.018" Margin="67.476,111.34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="211.026" IsReadOnly="True" />
-        <TextBox Text="{Binding HeaderBits, Mode=OneWay}" Grid.Column="1" HorizontalAlignment="Left" Height="16.018" Margin="67.476,132.358,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160.373" IsReadOnly="True" />
-        <TextBox Text="{Binding HeaderNonce, Mode=OneWay}" Grid.Column="1" HorizontalAlignment="Left" Height="16.018" Margin="67.476,153.376,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160.373" IsReadOnly="True"/>
-        <TextBox Text="{Binding TransactionCount, Mode=OneWay}" Grid.Column="1" HorizontalAlignment="Left" Height="16.018" Margin="83.716,184.805,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="46.838" IsReadOnly="True"/>
-        <Button x:Name="ClearButton" Content="Clear" Grid.Column="1" HorizontalAlignment="Left" Height="21.429" Margin="488.314,42.875,0,0" VerticalAlignment="Top" Width="60.123" Click="ClearButton_Click" />
-        <TextBlock HorizontalAlignment="Left" Height="16.018" Grid.Column="1" Margin="10,184.805,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="68.494" Text="Transactions"/>
-        <TextBlock HorizontalAlignment="Left" Height="16.018" Grid.Column="1" Margin="10,90.322,0,0" TextWrapping="Wrap" Text="Merkle " VerticalAlignment="Top" Width="52.476"/>
-        <TextBox Text="{Binding HeaderMerkleRoot, Mode=OneWay}" Grid.Column="1" HorizontalAlignment="Left" Height="16.018" Margin="67.476,91.066,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="408.283" IsReadOnly="True"/>
-        <Button x:Name="LoadPreviousBlockButton" Content="Load" Grid.Column="1" HorizontalAlignment="Left" Height="21.428" Margin="488.314,69.638,0,0" VerticalAlignment="Top" Width="60.123" Click="LoadPreviousBlockButton_Click" RenderTransformOrigin="2.603,3.027" />
+        <TabControl Margin="10,10,10,35" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+            <TabItem Header="Block Chain View" IsSelected="{Binding BlockChainViewIsSelected}">
+                <Grid Background="#FFE5E5E5" Margin="0,0,0,0">
+                    <local:BlockChainViewerControl Width="Auto" Height="Auto" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Transaction View" IsSelected="{Binding TransactionViewIsSelected}">
+                <Grid Background="#FFE5E5E5">
+                    <local:TxInspectorControl Width="Auto" Height="Auto" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Script View">
+                <Grid Background="#FFE5E5E5">
+                    <local:ScriptControl Width="Auto" Height="Auto" />
+                </Grid>
+            </TabItem>
+        </TabControl>
         <StatusBar Height="22.816" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
-            <TextBlock TextWrapping="Wrap" Text="{Binding Status, Mode=OneWay}" Width="702.423" FontSize="10" Height="18.011"/>
+            <TextBlock TextWrapping="Wrap" Text="{Binding Status, Mode=OneWay}" Width="832" FontSize="10" Height="18.011"/>
         </StatusBar>
-        <ListView Grid.Column="0" ItemsSource="{Binding BlockChainHeaders, Mode=OneWay}" MinWidth="130" Margin="10,60,10,30" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" MinHeight="460" RenderTransformOrigin="0.5,0.5" >
-            <ListView.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform AngleX="-0.095"/>
-                    <RotateTransform/>
-                    <TranslateTransform X="-0.399"/>
-                </TransformGroup>
-            </ListView.RenderTransform>
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding BlockHash}" Header="Hash" />
-                </GridView>
-            </ListView.View>
-            <ListView.ItemContainerStyle>
-                <Style TargetType="{x:Type ListViewItem}">
-                    <EventSetter Event="UIElement.MouseLeftButtonUp" Handler="OnBlockHeaderList_Click" />
-                </Style>
-            </ListView.ItemContainerStyle>
-        </ListView>
-        <Button x:Name="LoadHeadersButton" Content="Load More" Grid.Column="0" HorizontalAlignment="Left" Height="21.428" Margin="16.407,31.018,0,0" VerticalAlignment="Top" Width="98.583" Click="LoadHeadersButton_Click" />
-        <TextBlock HorizontalAlignment="Left" Height="16.018" Grid.Column="0" Margin="24.872,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="83.711" Text="Block Headers"/>
-        <ed:BlockArrow Grid.Column="1" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="20" Margin="145.564,180.823,0,0" Orientation="Left" Stroke="Black" VerticalAlignment="Top" Width="20" MouseLeftButtonUp="BlockArrow_MouseLeftButtonUp"/>
-        <ed:BlockArrow Grid.Column="1" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="20" Margin="180.803,180.823,0,0" Orientation="Right" Stroke="Black" VerticalAlignment="Top" Width="20" MouseLeftButtonUp="BlockArrow_MouseLeftButtonUp_1"/>
-        <RadioButton IsChecked="{Binding DisplayFormat_BlockExplorer}" Content="BlockExplorer" Grid.Column="1" HorizontalAlignment="Left" Height="20" Margin="355.6,180.823,0,0" VerticalAlignment="Top" Width="94" GroupName="BlockDisplayFormat" />
-        <RadioButton IsChecked="{Binding DisplayFormat_Satoshi}" Content="Satoshi" Grid.Column="1" HorizontalAlignment="Left" Height="20" Margin="463.6,180.823,0,0" VerticalAlignment="Top" Width="94" GroupName="BlockDisplayFormat"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Height="16.018" Margin="355.6,153.376,0,0" TextWrapping="Wrap" Text="Display Format" VerticalAlignment="Top" Width="120.159"/>
     </Grid>
 </Window>

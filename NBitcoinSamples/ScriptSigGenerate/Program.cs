@@ -103,36 +103,42 @@ namespace ScriptSigGnerate
             //logger.Debug(tx.ToHex());
             //logger.Debug(tx.ToString(RawFormat.Satoshi));
 
-            var coinHash = tx.GetSignatureHash(new Coin(uint256.Parse(_unspentTxId), 0, Money.Zero, scriptPubKey));
-            var coinSig = spender.Sign(coinHash);
-            var manScriptSig = new Script(
-                Op.GetPushOp(coinSig.ToDER())
+            #region Construct transaction signature manually (proper way is tx.sign). 
+
+            var txHash = tx.GetSignatureHash(new Coin(uint256.Parse(_unspentTxId), 0, Money.Zero, scriptPubKey));
+            var txSig = spender.Sign(txHash);
+            var scriptSig = new Script(
+                Op.GetPushOp(txSig.ToDER())
                 );
 
-            var checkSigResult = spender.PubKey.Verify(coinHash, ECDSASignature.FromDER(manScriptSig.ToBytes().Skip(1).ToArray()));
-            Console.WriteLine($"Check manual sig result: {checkSigResult}.");
+            // Append SigHash method byte to end of script sig array. 
+            var rawScriptSig = scriptSig.ToBytes().ToList();
+            rawScriptSig.Add((byte)SigHash.All);
+            rawScriptSig[0] += 1;   // Update the script length field by one.
 
-            // Append SigHash method byte to end of script sig array.
-            var finalManScriptSig = manScriptSig.ToBytes().ToList();
-            finalManScriptSig.Add(Convert.ToByte(SigHash.All));
-            finalManScriptSig[0] += 1;
+            scriptSig = new Script(rawScriptSig.ToArray(), false);
+            logger.Debug($"scriptSig: {Encoders.Hex.EncodeData(scriptSig.ToBytes())}");
 
-            txIn.ScriptSig = new Script(finalManScriptSig.ToArray(), false);
+            txIn.ScriptSig = scriptSig;
 
-            // OR use the transaction sign method and generate the script signature.
-            //tx.Sign(spender, false);
+            #endregion
 
-            Script scriptSig = tx.Inputs.First().ScriptSig;
-           logger.Debug($"scriptSig: {Encoders.Hex.EncodeData(scriptSig.ToBytes())}");
-           
-            // Verify transaction signature script.
-            uint256 sigHash = Script.SignatureHash(scriptPubKey, tx.Outputs.Transaction, 0, SigHash.All, amount, HashVersion.Original, null);
-            var verifyResult = spender.PubKey.Verify(sigHash, ECDSASignature.FromDER(scriptSig.ToBytes().Skip(1).ToArray()));
-            Console.WriteLine($"Verify signature script result {verifyResult}.");
+            // Verify transaction signature script, this doesn't modify the tx, it's double checking the signature field in scriptSig 
+            // is a signed version of yhr tx hash where the signing key was the private key matching the spender's public key.
+            // Note the way the signature is extracted from the scriptSig will depend on the type of scriptPubKey it was generated for,
+            // i.e. the scriptSig format differs for P2PK, P2PKH, P2PKHS etc.
+            var scriptSigParams = PayToPubkeyTemplate.Instance.ExtractScriptSigParameters(scriptSig);
+            var verifyTxHashSignature = spender.PubKey.Verify(txHash, scriptSigParams.Signature);
+            //var verifyCoinHashSignature = spender.PubKey.Verify(coinHash, ECDSASignature.FromDER(scriptSig.ToBytes().Skip(1).ToArray()));
+            Console.WriteLine($"Valid signature result {verifyTxHashSignature}.");
 
-            logger.Debug(tx.ToString(RawFormat.Satoshi));
+            // The verify script checks that the combined script signature (scriptSig) and original script (scriptPubKey) from the transaction
+            // being spent evaluate to true. This is the step that Bitcoin peers and miners need to perform in order to determine whether
+            // a previous unpsent transaction can be spent by a new transaction.
+            var scriptVerifyResult = Script.VerifyScript(scriptPubKey, tx, 0, Money.Zero, out var scriptError);
+            Console.WriteLine($"Script verify result {scriptVerifyResult}, script error {scriptError}.");
 
-            if (verifyResult == true)
+            if (scriptVerifyResult == true)
             {
                 // Send the transaction to the local bitcoin node.
                 using (var node = Node.ConnectToLocal(_network))

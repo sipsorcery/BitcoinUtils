@@ -3,7 +3,7 @@
 //
 // Description:
 // A minimal BitCoin client that submits transactions to a local bitcoin full node running in
-// regression test mdoe and uses a combination of extracting data with the bitcoin-cli command line
+// regression test mode and uses a combination of extracting data with the bitcoin-cli command line
 // utility and NBitcoin to spend some bitcoins.
 //
 // Note that it would be possible to get all the information needed using NBitcoin without needing bitcoin-cli.
