@@ -124,7 +124,7 @@ namespace ScriptSigGnerate
             #endregion
 
             // Verify transaction signature script, this doesn't modify the tx, it's double checking the signature field in scriptSig 
-            // is a signed version of yhr tx hash where the signing key was the private key matching the spender's public key.
+            // is a signed version of the tx hash where the signing key was the private key matching the spender's public key.
             // Note the way the signature is extracted from the scriptSig will depend on the type of scriptPubKey it was generated for,
             // i.e. the scriptSig format differs for P2PK, P2PKH, P2PKHS etc.
             var scriptSigParams = PayToPubkeyTemplate.Instance.ExtractScriptSigParameters(scriptSig);

@@ -18,6 +18,28 @@
 
 #include "bitcoinconsensus.h"
 
+int char2int(char input)
+{
+	if (input >= '0' && input <= '9')
+		return input - '0';
+	if (input >= 'A' && input <= 'F')
+		return input - 'A' + 10;
+	if (input >= 'a' && input <= 'f')
+		return input - 'a' + 10;
+	throw std::invalid_argument("Invalid input string");
+}
+
+// This function assumes src to be a zero terminated sanitized string with
+// an even number of [0-9a-f] characters, and target to be sufficiently large
+void hex2bin(const char* src, unsigned char* target)
+{
+	while (*src && src[1])
+	{
+		*(target++) = char2int(*src) * 16 + char2int(src[1]);
+		src += 2;
+	}
+}
+
 int main()
 {
 	/* GOOD P2PK transaction. 
@@ -142,6 +164,47 @@ int main()
 		0x00, 0x00, 0x00, 0x00		// Lock time
 	};
 
+	/* --- */
+
+	/*  GOOD P2WPKH script test template.
+		witness:      <signature> <pubkey>
+		scriptSig:    (empty)
+		scriptPubKey: 0 <20-byte-key-hash>
+						(0x0014{20-byte-key-hash})
+	*/
+
+	unsigned char p2wpkhScriptPubKey[] = { 0x00,																				   // Version 0 of segwit.
+			0x14,																												   // Length public key hash
+			0x11, 0x2b, 0xe9, 0x7a, 0x96, 0x5d, 0xc4, 0x7c, 0x0c, 0xc6, 0x41, 0x19, 0x1c, 0x30, 0xe9, 0xfe, 0x8a, 0xe6, 0x79, 0x71 // Public key hash
+	};
+
+	unsigned char p2wpkhTxTo[] = {
+		0x01, 0x00, 0x00, 0x00,		// Version
+		0x00,						// Marker
+		0x01,						// Flag
+		// txin:
+		0x01,						// Input count
+		0xb7, 0xe2, 0x4b, 0x63, 0x65, 0xaf, 0x16, 0x86, 0x5e, 0x38, 0x79, 0xb6, 0xd8, 0x73, 0x8f, 0x1f, 0xc1, 0xa7, 0x6a, 0xd0, 0xc9, 0xcb, 0xf5, 0x57, 0x2d, 0x87, 0x04, 0x64, 0xfe, 0x60, 0x3c, 0x1a, // Previous tx hash
+		0x00, 0x00, 0x00, 0x00,		// Previous output index
+		0x00,						// scriptSig substitute
+		0xff, 0xff, 0xff, 0xff,		// Sequence
+		// txout:
+		0x01,						// Output count
+		0x00, 0xf2, 0x05, 0x2a, 0x01, 0x00, 0x00, 0x00, // Satoshis
+		0x01,						// scriptPubKey length
+		0x51,						// scriptPubKey
+		// witness:
+		0x02, // Number of witness elements for first txin.
+		0x48,
+		0x30, 0x45, 0x02, 0x21, 0x00, 0x9e, 0x20, 0xc3, 0x18, 0xe6, 0x81, 0x35, 0xe5, 0xa6, 0xc6, 0xeb, 0xe4, 0x49, 0x80, 0xea, 0xa9, 0xb5, 0x11, 0x37, 0x5c, 0xdc, 0x44, 0x27, 0x8a, 0xe2, 0x07, 0x47, 
+		0xe9, 0xdd, 0x3a, 0xbb, 0x89, 0x02, 0x20, 0x20, 0x5e, 0x92, 0x78, 0xf6, 0x17, 0x10, 0xe2, 0xd3, 0xbb, 0x62, 0x20, 0x36, 0xc7, 0xf9, 0x8c, 0xd8, 0xe6, 0x52, 0xa7, 0xac, 0xab, 0x8c, 0xd2, 0x6d, 
+		0xd9, 0x8d,	0xe8, 0xc9, 0xc5, 0xb8, 0xf6, 0x01,
+		0x21, // OP_PUSHDATA 33 <data (public key of spender)>
+		0x02, 0x4a, 0x36, 0xf1, 0x36, 0xbd, 0x7c, 0x11, 0x4c, 0x59, 0x9e, 0xfc, 0x07, 0xbc, 0xba, 0x8a, 0xc3, 0x2e, 0xa6, 0xeb, 0xaf, 0x8e, 0x1e, 0x20, 0x9f, 0x91, 0x31, 0x6d, 0x9b, 0xd2, 0xeb, 0x74, 
+		0xe3,
+		0x00, 0x00, 0x00, 0x00		// Lock time
+	};
+
 	std::cout << "bitcoinconsensus version: " << bitcoinconsensus_version() << "." << std::endl;
 
 	bitcoinconsensus_error err;
@@ -158,8 +221,28 @@ int main()
 	auto opTrueResult = bitcoinconsensus_verify_script_with_amount(opTrueScriptPubKey, sizeof opTrueScriptPubKey, 0, opTrueTxTo, sizeof opTrueTxTo, 0, bitcoinconsensus_SCRIPT_FLAGS_VERIFY_ALL, &err);
 	std::cout << "OPTRUE result: " << opTrueResult << ", error code " << err << std::endl;
 
+	auto p2wpkhResult = bitcoinconsensus_verify_script_with_amount(p2wpkhScriptPubKey, sizeof p2wpkhScriptPubKey, 5000000000, p2wpkhTxTo, sizeof p2wpkhTxTo, 0, bitcoinconsensus_SCRIPT_FLAGS_VERIFY_ALL, &err);
+	std::cout << "P2WPKH result: " << p2wpkhResult << ", error code " << err << std::endl;
+
+	/* --- */
+
+	//char scriptPubKeyHex [] = "2103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432ac";
+	/*char scriptPubKeyHex[] = "00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1";
+	int scriptPubKeyLen = sizeof scriptPubKeyHex / 2;
+	unsigned char *scriptPubKey = new unsigned char[scriptPubKeyLen];
+	hex2bin(scriptPubKeyHex, scriptPubKey);
+
+	char txSrcHex[] = "01000000000102fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f00000000494830450221008b9d1dc26ba6a9cb62127b02742fa9d754cd3bebf337f7a55d114c8e5cdd30be022040529b194ba3f9281a99f2b1c0a19c0489bc22ede944ccf4ecbab4cc618ef3ed01eeffffffef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a0100000000ffffffff02202cb206000000001976a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac9093510d000000001976a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac000247304402203609e17b84f6a7d30c80bfa610b5b4542f32a8a0d5447a12fb1366d7f01cc44a0220573a954c4518331561406f90300e8f3358f51928d43c212a8caed02de67eebee0121025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee635711000000";
+	int txLen = sizeof txSrcHex / 2;
+	unsigned char * txDest = new unsigned char[txLen];
+	hex2bin(txSrcHex, txDest);
+
+	auto txParseResult = bitcoinconsensus_verify_script_with_amount(scriptPubKey, scriptPubKeyLen, 600000000, txDest, txLen, 1, bitcoinconsensus_SCRIPT_FLAGS_VERIFY_ALL, &err);
+	std::cout << "P2WPKH result: " << txParseResult << ", error code " << err << std::endl;*/
+
+	/* --- */
+
 	getchar();
 
     return 0;
 }
-
