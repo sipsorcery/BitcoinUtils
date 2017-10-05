@@ -1,7 +1,7 @@
 # BitcoinUtils
 
-Blah blah <sup>[1](#myfootnote)</sup>
+Blah blah [1]</sup>
 
 # Footnotes
 
-<a name="footnote1">1</a>: Footnote 1.
+[1]: Footnote 1.
